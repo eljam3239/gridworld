@@ -58,7 +58,25 @@ class GridWorld:
         Gets the state as a result of applying the given action
         """
         #TO DO:
+        row, col = self._state_to_rc(state)
         
+        if action == "up":
+            temp_row, temp_col = row - 1, col
+        elif action == "down":
+            temp_row, temp_col = row + 1, col
+        elif action == "left":
+            temp_row, temp_col = row, col - 1
+        elif action == "right":
+            temp_row, temp_col = row, col + 1
+        
+        temp_state = temp_row * self._width + temp_col
+        
+        #if temp state is valid and not blocked, thats the new state;return it
+        if self._inbounds_rc(temp_row, temp_col):
+            new_state = temp_state
+            if new_state not in self._blocked_cells:
+                return new_state
+        return state #stay put if temp state invalid
         
 
     def is_terminal(self, state):
