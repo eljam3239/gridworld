@@ -92,7 +92,11 @@ class GridWorld:
         Gets all non-terminal states in the environment
         """
         #TO DO:
-
+        states = []
+        for s in range(self._height * self._width):
+            if not self.is_terminal(s): #and s not in self._blocked_cells:
+                states.append(s)
+        return states
 
     def get_actions(self, state):
         """
