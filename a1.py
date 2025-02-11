@@ -84,6 +84,8 @@ class GridWorld:
         Returns true if a state is terminal (goal, or danger)
         """
         #To Do:
+        if state == self._goal_cell or state in self._danger_cells:
+            return True
 
     def get_states(self):
         """
