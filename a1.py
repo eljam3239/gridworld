@@ -103,6 +103,17 @@ class GridWorld:
         Returns a list of valid actions given the current state
         """
         #TO DO:
+        actions = []
+        row, col = self._state_to_rc(state)
+        if self._inbounds_rc(row - 1, col) and state - self._width not in self._blocked_cells:
+            actions.append("up")
+        if self._inbounds_rc(row + 1, col) and state + self._width not in self._blocked_cells:
+            actions.append("down")
+        if self._inbounds_rc(row, col - 1) and state - 1 not in self._blocked_cells:
+            actions.append("left")
+        if self._inbounds_rc(row, col + 1) and state + 1 not in self._blocked_cells:
+            actions.append("right")
+        return actions
 
 
     def get_reward(self, state):
