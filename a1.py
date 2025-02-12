@@ -136,7 +136,13 @@ class GridWorld:
         Each item in the list is a dictionary, containing the probability of reaching that state and the state itself
         """
         #TO DO:
-
+        transitions = []
+        for a in self.get_actions(state):
+            if a == action:
+                transitions.append({"prob": 1 - self._noise, "state": self._state_from_action(state, action)})
+            else:
+                transitions.append({"prob": self._noise, "state": state})
+        return transitions
 
     def get_value(self, state):
         """
