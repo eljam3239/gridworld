@@ -123,7 +123,12 @@ class GridWorld:
         assert self._inbounds(state)
         # Reward is non-zero for danger or goal
         #TO DO:
-
+        if state == self._goal_cell:
+            return self._goal_value
+        elif state in self._danger_cells:
+            return self._danger_value
+        else:
+            return 0
 
     def get_transitions(self, state, action):
         """
