@@ -190,7 +190,9 @@ class GridWorld:
         :param discount_factor: The discount factor for future rewards.
         """
         #To Do:
+
         while True:
+            self.create_next_values()
             max_diff = 0
             for state in self.get_states():
                 if self.is_terminal(state):
@@ -212,7 +214,9 @@ class GridWorld:
             self.set_next_values()
             if max_diff < 0.001:
                 break
+            self.set_next_values()
         return self._grid_values
+        
 
     
 
