@@ -173,6 +173,7 @@ class GridWorld:
         To use properly, run this at the end of each iteration
         """
         # TO DO:
+        self._grid_values = self._next_values.copy()
 
     def set_value(self, state, value):
         """
@@ -181,6 +182,7 @@ class GridWorld:
         """
         assert self._inbounds(state)
         #TO DO:
+        self._next_values[state] = value
 
     def solve_linear_system(self, discount_factor=1.0):
         """
