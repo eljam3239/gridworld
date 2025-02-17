@@ -23,7 +23,7 @@ class GridWorld:
         self._danger_cells = danger
         self._blocked_cells = blocked
         self._noise = noise # Noise level in the environment.
-        assert noise >= 0 and noise < 1 # Ensure valid noise value.
+        assert noise >= 0.0 and noise < 1.0 # Ensure valid noise value.
         self.create_next_values() # Initialize the next state values.
 
 
@@ -94,7 +94,7 @@ class GridWorld:
         #TO DO:
         states = []
         for s in range(self._height * self._width):
-            if not self.is_terminal(s): #and s not in self._blocked_cells:
+            if not self.is_terminal(s) and s not in self._blocked_cells: #commenting out this part after the and statement doesn't change anything from what I can tell
                 states.append(s)
         return states
 
@@ -105,6 +105,8 @@ class GridWorld:
         #TO DO:
         actions = []
         row, col = self._state_to_rc(state)
+        #check surrouding tiles
+        #if legal, in bounds, add to list of valid actions, return list
         if self._inbounds_rc(row - 1, col) and state - self._width not in self._blocked_cells:
             actions.append("up")
         if self._inbounds_rc(row + 1, col) and state + self._width not in self._blocked_cells:
@@ -165,7 +167,9 @@ class GridWorld:
         To use properly, run this at the start of each iteration
         """
         #TO DO:
-        self._next_values = [0 for _ in range(self._height*self._width)]
+        self._next_values = []
+        for _ in range(self._height * self._width):
+            self._next_values.append(0.0)
 
     def set_next_values(self):
         """
@@ -190,13 +194,14 @@ class GridWorld:
         :param discount_factor: The discount factor for future rewards.
         """
         #To Do:
-
+        self.create_next_values()
         while True:
-            self.create_next_values()
+            
             max_diff = 0
             for state in self.get_states():
                 if self.is_terminal(state):
                     continue
+                #find new value for the state
                 max_val = float('-inf')
                 old_val = self.get_value(state)
                 for action in self.get_actions(state):
@@ -239,3 +244,28 @@ class GridWorld:
                 out_str += " "
             out_str += "\n"
         return out_str
+
+def value_iteration(gw, discount, tolerance=0.1):
+    #TO DO:
+    while True:
+        max_diff = 0
+        for state in gw.get_states():
+            if gw.is_terminal(state):
+                continue
+            old_val = gw.get_value(state)
+            max_val = float('-inf')
+            for action in gw.get_actions(state):
+                val = 0
+                transitions = gw.get_transitions(state, action)
+                for transition in transitions:
+                    next_state = transition['state']
+                    prob = transition['prob']
+                    reward = gw.get_reward(next_state)
+                    val += prob * (reward + discount * gw.get_value(next_state))
+                if val > max_val:
+                    max_val = val
+            gw.set_value(state, max_val)
+            max_diff = max(max_diff, abs(old_val - max_val))
+        if max_diff < tolerance:
+            break
+    return gw._grid_values
