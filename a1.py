@@ -165,6 +165,7 @@ class GridWorld:
         To use properly, run this at the start of each iteration
         """
         #TO DO:
+        self._next_values = [0 for _ in range(self._height*self._width)]
 
     def set_next_values(self):
         """
