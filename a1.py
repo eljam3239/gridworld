@@ -59,7 +59,7 @@ class GridWorld:
         """
         #TO DO:
         row, col = self._state_to_rc(state)
-        
+
         if action == "up":
             temp_row, temp_col = row - 1, col
         elif action == "down":
@@ -68,23 +68,23 @@ class GridWorld:
             temp_row, temp_col = row, col - 1
         elif action == "right":
             temp_row, temp_col = row, col + 1
-        
+
         temp_state = temp_row * self._width + temp_col
-        
+
         #if temp state is valid and not blocked, thats the new state;return it
         if self._inbounds_rc(temp_row, temp_col):
             new_state = temp_state
             if new_state not in self._blocked_cells:
                 return new_state
         return state #stay put if temp state invalid
-        
+
 
     def is_terminal(self, state):
         """
         Returns true if a state is terminal (goal, or danger)
         """
         #To Do:
-        if state == self._goal_cell or state in self._danger_cells:
+        if (state == self._goal_cell) or (state in self._danger_cells):
             return True
 
     def get_states(self):
@@ -128,7 +128,7 @@ class GridWorld:
         elif state in self._danger_cells:
             return self._danger_value
         else:
-            return 0
+            return 0.0
 
     def get_transitions(self, state, action):
         """
@@ -149,7 +149,7 @@ class GridWorld:
                 transitions.append({'prob':self._noise/3, 'state':temp_state})
 
         return transitions
-        
+
 
     def get_value(self, state):
         """
@@ -183,34 +183,38 @@ class GridWorld:
         assert self._inbounds(state)
         #TO DO:
         self._next_values[state] = value
-
+    
     def solve_linear_system(self, discount_factor=1.0):
         """
         Solve the gridworld using a system of linear equations.
         :param discount_factor: The discount factor for future rewards.
         """
         #To Do:
-        self.create_next_values()
         while True:
             max_diff = 0
             for state in self.get_states():
                 if self.is_terminal(state):
                     continue
-                new_value = 0
+                max_val = float('-inf')
+                old_val = self.get_value(state)
                 for action in self.get_actions(state):
+                    val = 0
                     transitions = self.get_transitions(state, action)
-                    action_value = 0
                     for transition in transitions:
-                        action_value += transition['prob'] * (self.get_reward(state) + discount_factor * self.get_value(transition['state']))
-                    if action_value > new_value:
-                        new_value = action_value
-                diff = abs(new_value - self.get_value(state))
-                if diff > max_diff:
-                    max_diff = diff
+                        next_state = transition['state']
+                        prob = transition['prob']
+                        reward = self.get_reward(next_state) 
+                        val += prob * (reward + discount_factor * self.get_value(next_state))
+                    if val > max_val:
+                        max_val = val
+                self.set_value(state, max_val)
+                max_diff = max(max_diff, abs(old_val - max_val))
             self.set_next_values()
-            if max_diff < 0.01:
+            if max_diff < 0.001:
                 break
         return self._grid_values
+
+    
 
     def __str__(self):
         """
