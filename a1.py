@@ -190,6 +190,26 @@ class GridWorld:
         :param discount_factor: The discount factor for future rewards.
         """
         #To Do:
+        self.create_next_values()
+        while True:
+            max_diff = 0
+            for state in self.get_states():
+                if self.is_terminal(state):
+                    continue
+                new_value = 0
+                for action in self.get_actions(state):
+                    transitions = self.get_transitions(state, action)
+                    action_value = 0
+                    for transition in transition:
+                        action_value += transition['prob'] * (self.get_reward(state) + discount_factor * self.get_value(transition['state']))
+                    if action_value > new_value:
+                        new_value = action_value
+                diff = abs(new_value - self.get_value(state))
+                if diff > max_diff:
+                    max_diff = diff
+            self.set_next_values()
+            if max_diff < 0.01:
+                break
 
     def __str__(self):
         """
