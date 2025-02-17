@@ -137,12 +137,19 @@ class GridWorld:
         """
         #TO DO:
         transitions = []
-        for a in self.get_actions(state):
-            if a == action:
-                transitions.append({"prob": 1 - self._noise, "state": self._state_from_action(state, action)})
-            else:
-                transitions.append({"prob": self._noise, "state": state})
+        if self.is_terminal(state):
+            return transitions
+        temp_state = self._state_from_action(state,action)
+        #assuming we do that action, as inteneded
+        transitions.append({'prob':1.0-self._noise, 'state':temp_state})
+        #accounting for other actions due to noise
+        for act in ['up', 'down', 'left', 'right']:
+            if act != action:
+                temp_state = self._state_from_action(state, act)
+                transitions.append({'prob':self._noise/3, 'state':temp_state})
+
         return transitions
+        
 
     def get_value(self, state):
         """
